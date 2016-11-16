@@ -5,6 +5,10 @@
  */
 package encripta3;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  *
  * @author ian
@@ -36,7 +40,7 @@ public class tools {
                }
            }
         
-        return nuevaClave.reverse().toString();
+        return nuevaClave.toString();
     }
     
     public String codifica(String texto){
@@ -68,6 +72,24 @@ public class tools {
         return cadena.toString();
     }
     
+    public String clarifica(String texto){
+        int largo=texto.length(),i=0;
+        String sustituto="", cadena= "";
+        int numero;
+        
+        while(i<largo){
+            sustituto=sustituto+texto.charAt(i);
+            if(sustituto.length()==2){
+                numero=Integer.parseInt(sustituto);
+                numero=numero+64;
+                cadena=cadena+(char)numero;
+                sustituto="";
+            }
+            i++;
+        }
+        return cadena;
+    }
+        
     public String codificaASCII(String texto){
         int largoTexto = texto.length();
         texto = texto.toUpperCase();
@@ -87,15 +109,22 @@ public class tools {
     
     public String Sustitucion(String texto, String clave){
         StringBuilder cadena = new StringBuilder(), tempTexto = new StringBuilder(), tempClave = new StringBuilder();
-        String valorStr;
+        String valorStr,valorGuardado;
         //tienen mismo largo en este punto
         int largo = texto.length(), i=0, valor;
-        
+        int guardado=0;
         while(i<largo){
             tempTexto.append(texto.charAt(i));
             tempClave.append(clave.charAt(i));
             if(tempTexto.length()==2){
                 valor=Integer.parseInt(tempTexto.toString())+Integer.parseInt(tempClave.toString());
+                guardado=valor/28;
+                if(guardado<10){
+                    valorGuardado="0";
+                    valorGuardado=valorGuardado.concat(String.valueOf(guardado));
+                }else{
+                    valorGuardado=String.valueOf(guardado);
+                }
                 valor=valor%28;
                 if(valor<10){
                     valorStr="0";
@@ -103,10 +132,13 @@ public class tools {
                 }else{
                     valorStr=String.valueOf(valor);
                 }
+                cadena.append(valorGuardado);
                 cadena.append(valorStr);
                 tempTexto.delete(0, 2);
                 tempClave.delete(0, 2);
+                
             }
+            
             i++;
         }
         return cadena.toString();
@@ -146,6 +178,23 @@ public class tools {
             j=i;
         }
         return traspuesta;
+    }
+    
+    public String TransposicionInversa(String texto){
+        int largo = texto.length(), i=0,j=0;
+        String cadena="";
+        String traspuesta1="";
+        while(i<largo/5){
+            while(j<largo){
+                traspuesta1=traspuesta1+texto.charAt(j);
+                j=j+4;
+            }
+           
+            i++;
+            j=i;
+        }
+        cadena=traspuesta1;
+        return cadena;
     }
     
     public String Interpone(String texto){
@@ -189,7 +238,95 @@ public class tools {
         valor=Integer.parseInt(temp);
         ascii=(char)valor;
         Encrypt=Encrypt+ascii;
-        System.out.println(Encrypt+"");
+        OutputStream o;
+        try{
+                o = new FileOutputStream("/home/ian/Escritorio/results.txt");
+                //mir_id, lncRNA transcript id, position of seed in transcript, dG duplex, dG binding, dG open, ddG
+                o.write(Encrypt.getBytes());
+                o.close();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        System.out.println(Encrypt+"\n");
        
     }
+    
+    
+    public String desencripta(String texto){
+        int largo=texto.length(), i=0, numero;
+        String temp="", trueCadena="";
+        
+        while(i<largo){
+            numero=texto.charAt(i);
+            trueCadena=trueCadena+String.valueOf(numero).subSequence(1,3);
+            
+            i++;
+        }
+        return trueCadena;
+    }
+    
+   public String inSustitucionModularZ(String texto){
+       int largo=texto.length(),i=0, bloque=4;
+       String sustituto="",temp="";
+       String cadena="";
+       int valor;
+       while(i<largo){
+           
+           if(i%4==0 && i!=0){
+               temp=sustituto.substring(0,2);
+               sustituto=sustituto.substring(2,4);
+               valor=Integer.parseInt(temp)*28+Integer.parseInt(sustituto);
+               if(valor<10){
+                   cadena=cadena+"0";
+                   cadena=cadena+String.valueOf(valor);
+               }else{
+                   cadena=cadena+String.valueOf(valor);
+               }
+               temp="";
+               sustituto="";
+           }
+           sustituto=sustituto+texto.charAt(i);
+           i++;
+       }
+       temp=sustituto.substring(0,2);
+        sustituto=sustituto.substring(2,4);
+        valor=Integer.parseInt(temp)*28+Integer.parseInt(sustituto);
+      if(valor<10){
+            cadena=cadena+"0";
+            cadena=cadena+String.valueOf(valor);
+        }else{
+            cadena=cadena+String.valueOf(valor);
+        }
+       
+       return cadena;
+    }
+   
+   public String desplaza(String texto, String clave){
+       int largo=texto.length(),i=0, valor=0;
+       String minuendo="";
+       String sustraendo="";
+       String cadena="";
+       while(i<largo){
+           minuendo=minuendo+texto.charAt(i);
+           sustraendo=sustraendo+clave.charAt(i);
+           if(minuendo.length()==2){
+               valor=Integer.parseInt(minuendo)-Integer.parseInt(sustraendo);
+               if(valor<10){
+                   cadena=cadena+"0";
+                   cadena=cadena+String.valueOf(valor);
+                    minuendo="";
+                    sustraendo="";
+               }else{
+                cadena=cadena+String.valueOf(valor);
+               minuendo="";
+               sustraendo="";
+               }
+           }
+           
+           i++;
+          
+       }
+       
+       return cadena;
+   }
 }
