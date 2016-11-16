@@ -30,21 +30,34 @@ public class Encripta3 {
        try{
            file1= new FileReader("/home/ian/Escritorio/mensaje"); //args[0]
            file2 = new FileReader("/home/ian/Escritorio/clave"); //args[1]
-           final int numBloques = 3;
+           final int numBloques = 5;
            bufferTexto = new BufferedReader(file1);
            bufferClave = new BufferedReader(file2);
            texto = bufferTexto.readLine();
            clave = bufferClave.readLine();
+           int cantidadBloques=0;
            
            tools t = new tools();
            //Obtiene bloques - texto.length/blques+1
-           int cantidadBloques=texto.length()/numBloques+1;
-           Bloques=t.cortaBlques(numBloques, texto);
-           BloquesClave=t.cortaBlques(numBloques, clave);
+           if(texto.length()%numBloques==0){
+                cantidadBloques=texto.length()/numBloques;
+           }else{
+               cantidadBloques=texto.length()/numBloques+1;
+           }
+           
            int i=1;
+           
            System.out.println("Texto original :"+texto);
            System.out.println("Clave original :"+clave);
-           System.out.println("Clave codificada: "+t.ajustaClave(texto,t.codificaASCII(clave)));
+           System.out.println("texto codificado: "+t.codifica(texto));
+           clave=t.ajustaClave(t.codifica(texto),t.codificaASCII(clave));
+           
+           
+           Bloques=t.cortaBlques(numBloques, texto);
+           BloquesClave=t.cortaBlques(numBloques, clave);
+           
+           
+           System.out.println("Clave codificada: "+clave);
            while(i<=cantidadBloques){
                texto=Bloques[i];
                clave=BloquesClave[i];
@@ -75,7 +88,7 @@ public class Encripta3 {
            cadena=t.Interpone(cadena);
            System.out.println(cadena);
            t.finalEncrypt(cadena);
-          /* 
+          /*
            
            */
            
