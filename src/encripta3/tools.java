@@ -180,11 +180,11 @@ public class tools {
         return traspuesta;
     }
     
-    public String TransposicionInversa(String texto){
+    public String TransposicionInversa(String texto, int tamanoBloque){
         int largo = texto.length(), i=0,j=0;
         String cadena="";
         String traspuesta1="";
-        while(i<largo/5){
+        while(i<largo/tamanoBloque){
             while(j<largo){
                 traspuesta1=traspuesta1+texto.charAt(j);
                 j=j+4;
@@ -220,7 +220,7 @@ public class tools {
         
     }
     
-    public void finalEncrypt(String texto){
+    public String finalEncrypt(String texto, int numBloques){
        int largo = texto.length(), i=0;
        String Encrypt="",temp="";
        int valor; char ascii;
@@ -242,12 +242,12 @@ public class tools {
         try{
                 o = new FileOutputStream("/home/ian/Escritorio/results.txt");
                 //mir_id, lncRNA transcript id, position of seed in transcript, dG duplex, dG binding, dG open, ddG
-                o.write(Encrypt.getBytes());
+                o.write((numBloques+"-"+Encrypt).getBytes());
                 o.close();
             }catch(IOException e){
                 e.printStackTrace();
             }
-        System.out.println(Encrypt+"\n");
+        return Encrypt;
        
     }
     
